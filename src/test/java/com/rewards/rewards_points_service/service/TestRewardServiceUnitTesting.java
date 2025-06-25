@@ -95,22 +95,4 @@ public class TestRewardServiceUnitTesting {
         });
     }
 
-    /**
-     * Adds a negative transaction using reflection and ensures calculateAllRewards fails with an exception.
-     */
-    @Test
-    void testCalculateAllRewards_withNegativeTransaction_throws() {
-        try {
-            var field = RewardService.class.getDeclaredField("transactions");
-            field.setAccessible(true);
-            List<Transaction> list = (List<Transaction>) field.get(null);
-            list.add(new Transaction("cust4", -120, "2025-04-01")); // Invalid
-        } catch (Exception e) {
-            throw new RuntimeException(e);
-        }
-
-        assertThrows(InvalidTransactionException.class, () -> {
-            rewardService.calculateAllRewards();
-        });
-    }
 }

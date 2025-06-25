@@ -42,7 +42,22 @@ public class TestRewardServiceIntegrationTesting {
         assertTrue(cust1.getTotalRewards() > 0);
         assertTrue(cust1.getMonthlyRewards().containsKey("January"));
     }
+    /**
+     * Adds a valid transaction and ensures the rewards are correctly reflected.
+     */
+    @Test
+    void testAddTransaction_validTransaction() {
+        Transaction transaction = new Transaction("custNew", 120, "2025-06-01");
+        rewardService.addTransaction(transaction);
 
+        RewardResponse response = rewardService.getRewardsByCustomerId("custNew");
+        assertNotNull(response);
+        assertEquals("custNew", response.getCustomerId());
+        assertEquals(90, response.getTotalRewards()); // 2*(120-100) + 50 = 90
+        assertTrue(response.getMonthlyRewards().containsKey("June"));
+    }
+
+    
     /**
      * Ensures that trying to add a transaction with a negative amount
      * triggers a custom InvalidTransactionException.
