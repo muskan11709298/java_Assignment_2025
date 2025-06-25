@@ -36,8 +36,9 @@ If a customer makes a transaction of **$120**:
 
 1. Clone the repository:
    ```bash
-   git clone https://github.com/your-username/reward-points-service.git
-   cd reward-points-service
+     https://github.com/muskan11709298/java_Assignment_2025.git
+
+cd reward-points-service
 2. Build the project:
    ```bash
     mvn clean install
