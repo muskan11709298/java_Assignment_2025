@@ -2,6 +2,7 @@ package com.rewards.rewards_points_service.service;
 
 import java.time.Month;
 import java.time.format.TextStyle;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
@@ -16,18 +17,30 @@ import com.rewards.rewards_points_service.model.Transaction;
 
 /**
  * Service class containing the core business logic to calculate rewards.
+ * It supports calculating:
+ * - Monthly and total reward points for all customers
+ * - Monthly and total reward points for a specific customer
+ * - Adding new transactions
  */
+
 @Service
 public class RewardService {
+	
+    /**
+     * A sample list of transactions. In a real  world application, this would likely come from a database.
+     */
 
-    private static final List<Transaction> transactions = List.of(
-            new Transaction("cust1", 120, "2025-01-15"),
-            new Transaction("cust1", 80, "2025-02-10"),
-            new Transaction("cust1", 200, "2025-03-05"),
-            new Transaction("cust2", 40, "2025-01-17"),
-            new Transaction("cust2", 130, "2025-02-22"),
-            new Transaction("cust2", 90, "2025-03-01")
-    );
+
+    private static final List<Transaction> transactions = new ArrayList<>(List.of(
+    	    new Transaction("cust1", 120, "2025-01-15"),
+    	    new Transaction("cust1", 80, "2025-02-10"),
+    	    new Transaction("cust1", 120, "2025-03-15"),
+    	    new Transaction("cust2", 80, "2025-01-10"),
+    	    new Transaction("cust2", 120, "2025-02-15"),
+    	    new Transaction("cust2", 80, "2025-03-10")
+
+
+    ));
 
     /**
      * Calculates rewards for all customers per month and in total.
@@ -48,10 +61,11 @@ public class RewardService {
             String monthName = month.getDisplayName(TextStyle.FULL, Locale.ENGLISH);
 
             int points = calculatePoints(transaction.getAmount());
+            // Add points to the corresponding customer's monthly reward map
             customerRewards.computeIfAbsent(customerId, k -> new HashMap<>())
                     .merge(monthName, points, Integer::sum);
         }
-
+        // Convert the map to a list of RewardResponse
         return customerRewards.entrySet().stream()
                 .map(entry -> {
                     Map<String, Integer> monthly = entry.getValue();
@@ -60,7 +74,60 @@ public class RewardService {
                 })
                 .collect(Collectors.toList());
     }
+    
+    /**
+     * Calculates rewards for a single customer.
+     *
+     * @param customerId the ID of the customer
+     */
+    public RewardResponse getRewardsByCustomerId(String customerId) {
+        Map<String, Integer> monthlyRewards = new HashMap<>();
 
+        for (Transaction transaction : transactions) {
+            // Only consider transactions for the given customer
+            if (!transaction.getCustomerId().equals(customerId)) 
+            {
+            	continue;
+
+            }
+
+            if (transaction.getAmount() < 0) {
+                throw new InvalidTransactionException("Transaction amount cannot be negative: " + transaction.getAmount());
+            }
+
+            int points = calculatePoints(transaction.getAmount());
+            String monthName = transaction.getTransactionDate().getMonth()
+                    .getDisplayName(TextStyle.FULL, Locale.ENGLISH);
+
+            monthlyRewards.merge(monthName, points, Integer::sum);
+        }
+
+        int totalPoints = monthlyRewards.values().stream().mapToInt(Integer::intValue).sum();
+
+        return new RewardResponse(customerId, monthlyRewards, totalPoints);
+    }
+    /**
+     * Adds a new transaction to the in-memory list.
+     *
+     * @param transaction the transaction to add
+     */
+    public void addTransaction(Transaction transaction) {
+        if (transaction.getAmount() < 0) {
+            throw new InvalidTransactionException("Amount cannot be negative.");
+        }
+        transactions.add(transaction);
+    }
+    
+    /**
+     * Calculates reward points based on the transaction amount.
+     * 
+     * Rewards are given as:
+     * - 2 points for every dollar spent over $100
+     * - 1 point for every dollar spent over $50 up to $100
+     *
+     * @param amount the transaction amount
+     * @return the calculated reward points
+     */
     private int calculatePoints(double amount) {
         int points = 0;
         if (amount > 100) {
