@@ -1,8 +1,9 @@
 package com.rewards.rewards_points_service.controller;
 
-import java.time.LocalDate;
 import java.util.List;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -21,6 +22,8 @@ import com.rewards.rewards_points_service.service.RewardService;
 @RestController
 @RequestMapping("/api/rewards")
 public class RewardController{
+	private static final Logger logger = LoggerFactory.getLogger(RewardController.class);
+
 	@Autowired
 	private RewardService rewardService;
 	/*
@@ -28,6 +31,7 @@ public class RewardController{
 	 */
 	@GetMapping
 	public List<RewardResponse> getAllRewards() {
+	    logger.info("Fetching rewards for all customers");
 		return rewardService.calculateAllRewards();
 	}
 	/*
@@ -35,6 +39,7 @@ public class RewardController{
 	 */
 	@GetMapping("/{customerId}")
 	public ResponseEntity<RewardResponse> getRewardsByCustomer(@PathVariable String customerId) {
+	    logger.info("Fetching rewards for a particular customers");
 		return ResponseEntity.ok(rewardService.getRewardsByCustomerId(customerId));
 	}
 	/*
@@ -43,6 +48,7 @@ public class RewardController{
 	@PostMapping("/add-transaction")
 	public ResponseEntity<String> addTransaction(@RequestBody Transaction transaction) {
 		rewardService.addTransaction(transaction);
+	    logger.info("Transaction Added successfully");
 		return ResponseEntity.ok("Transaction added successfully");
 	}
 }

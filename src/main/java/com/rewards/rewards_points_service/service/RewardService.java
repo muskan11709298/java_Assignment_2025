@@ -15,6 +15,10 @@ import com.rewards.rewards_points_service.exception.InvalidTransactionException;
 import com.rewards.rewards_points_service.model.RewardResponse;
 import com.rewards.rewards_points_service.model.Transaction;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+
 /**
  * Service class containing the core business logic to calculate rewards. It
  * supports calculating: - Monthly and total reward points for all customers -
@@ -29,6 +33,7 @@ public class RewardService {
 	 * A sample list of transactions. In a real world application, this would likely
 	 * come from a database.
 	 */
+    private static final Logger logger = LoggerFactory.getLogger(RewardService.class);
 
 	private static final List<Transaction> transactions = new ArrayList<>(
 			List.of(new Transaction("cust1", 120, "2025-01-15"), new Transaction("cust1", 80, "2025-02-10"),
@@ -60,10 +65,14 @@ public class RewardService {
 			// Add points to the corresponding customer's monthly reward map
 			customerRewards.computeIfAbsent(customerId, k -> new HashMap<>()).merge(monthName, points, Integer::sum);
 		}
+		logger.info("Calculating rewards for all customers...");
 		// Convert the map to a list of RewardResponse
 		return customerRewards.entrySet().stream().map(entry -> {
 			Map<String, Integer> monthly = entry.getValue();
 			int total = monthly.values().stream().mapToInt(Integer::intValue).sum();
+		    logger.info("Customer ID: {}", entry.getKey());
+		    logger.info("Monthly rewards {}: ", monthly);
+		    logger.info("Total rewards {}: ", total);
 			return new RewardResponse(entry.getKey(), monthly, total);
 		}).collect(Collectors.toList());
 	}
@@ -96,6 +105,9 @@ public class RewardService {
 		}
 
 		int totalPoints = monthlyRewards.values().stream().mapToInt(Integer::intValue).sum();
+		logger.info("Calculating rewards for customer ID: {} ", customerId);
+		logger.info("Monthly rewards: {}", monthlyRewards);
+		logger.info("Total rewards: {} ", totalPoints);
 		return new RewardResponse(customerId, monthlyRewards, totalPoints);
 	}
 
