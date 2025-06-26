@@ -76,18 +76,16 @@ public class TestRewardControllerUnitTesting {
         // Prepare mock response
         Map<String, Integer> monthlyRewards = Map.of("2025-03-10", 90);
         RewardResponse mockResponse = new RewardResponse("cust3", monthlyRewards, 90);
-
         // Mock the service call
         Mockito.when(rewardService.getRewardsByCustomerId("cust3")).thenReturn(mockResponse);
-
         // Call controller method
         ResponseEntity<RewardResponse> response = rewardController.getRewardsByCustomer("cust3");
         // Validate response
         assertEquals(HttpStatus.OK, response.getStatusCode());
         assertNotNull(response.getBody());
         assertEquals("cust3", response.getBody().getCustomerId());
-
     }
+    
     /**
      * Test the addTransaction() method.
      * Validates that the controller accepts a transaction and returns the correct success message.
@@ -96,7 +94,6 @@ public class TestRewardControllerUnitTesting {
     void testAddTransaction() {
         // Create a transaction
         Transaction transaction = new Transaction("cust2", 90.0, "2025-03-10");
-       
         // Call controller method (method returns a static string)
         ResponseEntity<String> response = rewardController.addTransaction(transaction);
        //validates response

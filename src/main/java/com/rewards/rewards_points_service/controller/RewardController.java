@@ -1,6 +1,5 @@
 package com.rewards.rewards_points_service.controller;
 
-
 import java.time.LocalDate;
 import java.util.List;
 
@@ -21,39 +20,29 @@ import com.rewards.rewards_points_service.service.RewardService;
 
 @RestController
 @RequestMapping("/api/rewards")
-public class RewardController {
-	
-    @Autowired
-    private RewardService rewardService;
-    
+public class RewardController{
+	@Autowired
+	private RewardService rewardService;
 	/*
 	 * end point to calculate rewards point for all customer
-	 */    
-    @GetMapping
-    public List<RewardResponse> getAllRewards() {
-        return rewardService.calculateAllRewards();
-    }
-    
+	 */
+	@GetMapping
+	public List<RewardResponse> getAllRewards() {
+		return rewardService.calculateAllRewards();
+	}
 	/*
 	 * end point to calcuate reward point for customer based on customer id
 	 */
-    @GetMapping("/{customerId}")
-    public ResponseEntity<RewardResponse> getRewardsByCustomer(@PathVariable String customerId) {
-        return ResponseEntity.ok(rewardService.getRewardsByCustomerId(customerId));
-    }
-  
-    
+	@GetMapping("/{customerId}")
+	public ResponseEntity<RewardResponse> getRewardsByCustomer(@PathVariable String customerId) {
+		return ResponseEntity.ok(rewardService.getRewardsByCustomerId(customerId));
+	}
 	/*
 	 * Adds a new transaction for rewards calculation
-	 */    
-    @PostMapping("/add-transaction")
-    public ResponseEntity<String> addTransaction(@RequestBody Transaction transaction) {
-        rewardService.addTransaction(transaction);
-        return ResponseEntity.ok("Transaction added successfully");
-    }
-
-    
-
-	
-
+	 */
+	@PostMapping("/add-transaction")
+	public ResponseEntity<String> addTransaction(@RequestBody Transaction transaction) {
+		rewardService.addTransaction(transaction);
+		return ResponseEntity.ok("Transaction added successfully");
+	}
 }

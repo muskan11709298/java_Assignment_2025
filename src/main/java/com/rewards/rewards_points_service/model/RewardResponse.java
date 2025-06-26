@@ -36,11 +36,10 @@ public class RewardResponse {
         this.totalRewards = totalRewards;
     }
     
-
     public String getCustomerId() {
         return customerId;
     }
-
+    
     public Map<String, Integer> getMonthlyRewards() {
         return monthlyRewards;
     }

@@ -24,7 +24,6 @@ public class TestRewardServiceUnitTesting {
     @BeforeEach
     void setup() {
         rewardService = new RewardService();
-
         try {
             var field = RewardService.class.getDeclaredField("transactions");
             field.setAccessible(true);
@@ -46,7 +45,6 @@ public class TestRewardServiceUnitTesting {
     @Test
     void testCalculateAllRewards() {
         List<RewardResponse> rewards = rewardService.calculateAllRewards();
-
         assertNotNull(rewards);
         assertEquals(1, rewards.size());
         RewardResponse cust1 = rewards.get(0);
@@ -75,9 +73,7 @@ public class TestRewardServiceUnitTesting {
     @Test
     void testAddTransaction_valid() {
         Transaction transaction = new Transaction("cust3", 110, "2025-03-20");
-
         rewardService.addTransaction(transaction);
-
         RewardResponse response = rewardService.getRewardsByCustomerId("cust3");
         assertEquals("cust3", response.getCustomerId());
         assertEquals(70, response.getTotalRewards()); // Expected points from 110
