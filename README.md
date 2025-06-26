@@ -130,6 +130,7 @@ com.rewards.rewards_points_service
 │   └── GlobalExceptionHandler.java
 └── test
     ├── TestRewardControllerUnitTesting.java
+    ├── TestRewardControllerIntegrationTesting.java
     ├── TestRewardServiceIntegrationTesting.java
     └── TestRewardServiceUnitTesting.java
 ```
